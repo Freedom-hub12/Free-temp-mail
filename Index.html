@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Temp Mail Generator</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen">
+
+<!-- TOP AD PLACEHOLDER -->
+<div class="w-full bg-gray-300 text-center py-6 text-gray-700 font-semibold">
+    Large Top Ad Placeholder (728x90 / 970x250)
+</div>
+
+<div class="max-w-6xl mx-auto p-4 flex flex-col md:flex-row gap-4">
+
+    <!-- MAIN CONTENT -->
+    <div class="flex-1 bg-white rounded-xl shadow p-6">
+
+        <h1 class="text-2xl font-bold mb-4">Temporary Email</h1>
+
+        <!-- Email Display -->
+        <div class="flex flex-col sm:flex-row gap-3 mb-4">
+            <input id="emailDisplay" type="text" readonly 
+                class="flex-1 border rounded-lg p-3 bg-gray-50 text-gray-700" />
+            <button id="copyBtn" 
+                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg">
+                Copy
+            </button>
+        </div>
+
+        <!-- Controls -->
+        <div class="flex gap-3 mb-6">
+            <button id="refreshBtn" 
+                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
+                Refresh Inbox
+            </button>
+        </div>
+
+        <!-- Inbox -->
+        <div>
+            <h2 class="text-lg font-semibold mb-3">Inbox</h2>
+            <div id="inboxList" class="space-y-2"></div>
+        </div>
+
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="w-full md:w-64 bg-white rounded-xl shadow p-6 text-center">
+        <div class="bg-gray-200 h-64 flex items-center justify-center text-gray-600 font-medium">
+            Sidebar Ad Placeholder (300x250)
+        </div>
+    </div>
+
+</div>
+
+<!-- EMAIL MODAL -->
+<div id="emailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-xl shadow-lg p-6 relative">
+        <button id="closeModal" class="absolute top-3 right-3 text-gray-500 hover:text-black">
+            ✕
+        </button>
+        <h3 id="modalSubject" class="text-xl font-bold mb-2"></h3>
+        <p id="modalFrom" class="text-sm text-gray-500 mb-4"></p>
+        <div id="modalContent" class="text-gray-700 whitespace-pre-wrap"></div>
+    </div>
+</div>
+
+<script>
+const API = "https://api.mail.tm";
+let token = "";
+let accountId = "";
+
+// Generate random string
+function randomString(length) {
+    const chars = "abcdefghijklmnopqrstuvwxyz1234567890";
+    let result = "";
+    for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+}
+
+// Initialize app
+async function init() {
+    try {
+        // 1. Get domains
+        const domainRes = await fetch(API + "/domains");
+        const domainData = await domainRes.json();
+        const domain = domainData["hydra:member"][0].domain;
+
+        // 2. Generate email
+        const email = randomString(10) + "@" + domain;
+        const password = randomString(12);
+
+        // 3. Create account
+        await fetch(API + "/accounts", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ address: email, password: password })
+        });
+
+        // 4. Login
+        const loginRes = await fetch(API + "/token", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ address: email, password: password })
+        });
+
+        const loginData = await loginRes.json();
+        token = loginData.token;
+
+        document.getElementById("emailDisplay").value = email;
+
+        loadInbox();
+
+    } catch (err) {
+        alert("Error initializing app");
+        console.error(err);
+    }
+}
+
+// Load inbox
+async function loadInbox() {
+    const inboxList = document.getElementById("inboxList");
+    inboxList.innerHTML = "Loading...";
+
+    const res = await fetch(API + "/messages", {
+        headers: { "Authorization": "Bearer " + token }
+    });
+
+    const data = await res.json();
+    const messages = data["hydra:member"];
+
+    inboxList.innerHTML = "";
+
+    if (messages.length === 0) {
+        inboxList.innerHTML = "<p class='text-gray-500'>No messages yet.</p>";
+        return;
+    }
+
+    messages.forEach(msg => {
+        const div = document.createElement("div");
+        div.className = "border p-3 rounded-lg hover:bg-gray-50 cursor-pointer";
+        div.innerHTML = `
+            <p class="font-semibold">${msg.subject || "(No Subject)"}</p>
+            <p class="text-sm text-gray-500">${msg.from.address}</p>
+        `;
+        div.onclick = () => openMessage(msg.id);
+        inboxList.appendChild(div);
+    });
+}
+
+// Open message
+async function openMessage(id) {
+    const res = await fetch(API + "/messages/" + id, {
+        headers: { "Authorization": "Bearer " + token }
+    });
+
+    const msg = await res.json();
+
+    document.getElementById("modalSubject").innerText = msg.subject || "(No Subject)";
+    document.getElementById("modalFrom").innerText = "From: " + msg.from.address;
+    document.getElementById("modalContent").innerText = msg.text || msg.html || "";
+
+    document.getElementById("emailModal").classList.remove("hidden");
+    document.getElementById("emailModal").classList.add("flex");
+}
+
+// Close modal
+document.getElementById("closeModal").onclick = () => {
+    document.getElementById("emailModal").classList.add("hidden");
+};
+
+// Copy email
+document.getElementById("copyBtn").onclick = () => {
+    const email = document.getElementById("emailDisplay");
+    email.select();
+    document.execCommand("copy");
+    alert("Email copied!");
+};
+
+// Refresh inbox
+document.getElementById("refreshBtn").onclick = loadInbox;
+
+// Start app
+init();
+</script>
+
+</body>
+</html>
