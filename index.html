@@ -60,10 +60,19 @@ body {
     background: rgba(34,197,94,0.1);
     transform: translateY(-2px);
 }
+
+/* ===== Footer Links ===== */
+.footer-link {
+    color: #22c55e;
+    transition: 0.2s;
+}
+.footer-link:hover {
+    color: white;
+}
 </style>
 </head>
 
-<body class="text-green-400 min-h-screen font-sans">
+<body class="text-green-400 min-h-screen font-sans flex flex-col">
 
 <!-- TOP AD -->
 <div class="w-full glass text-center py-6 text-green-500 font-semibold">
@@ -80,7 +89,7 @@ body {
     </p>
 </header>
 
-<div class="max-w-6xl mx-auto px-4 pb-16 flex flex-col lg:flex-row gap-8">
+<div class="max-w-6xl mx-auto px-4 pb-16 flex flex-col lg:flex-row gap-8 flex-grow">
 
     <!-- MAIN -->
     <div class="flex-1 glass rounded-3xl p-8">
@@ -110,6 +119,11 @@ body {
             </div>
         </div>
 
+        <!-- AD BETWEEN EMAIL & INBOX -->
+        <div class="glass rounded-2xl p-6 text-center text-green-500 font-semibold mb-8">
+            Mid Content Ad Placeholder (Responsive Banner)
+        </div>
+
         <!-- Controls -->
         <div class="flex gap-4 mb-8">
             <button id="refreshBtn"
@@ -126,6 +140,11 @@ body {
             <div id="inboxList" class="space-y-4"></div>
         </div>
 
+        <!-- AD UNDER INBOX -->
+        <div class="glass rounded-2xl p-6 text-center text-green-500 font-semibold mt-10">
+            Bottom Content Ad Placeholder (728x90 / Native)
+        </div>
+
     </div>
 
     <!-- SIDEBAR -->
@@ -136,6 +155,19 @@ body {
     </aside>
 
 </div>
+
+<!-- FOOTER -->
+<footer class="glass mt-12 py-10 text-center text-sm text-green-500">
+    <div class="mb-4">
+        <a href="#" class="footer-link mx-3">Terms of Service</a>
+        <a href="#" class="footer-link mx-3">Privacy Policy</a>
+        <a href="#" class="footer-link mx-3">DMCA</a>
+        <a href="#" class="footer-link mx-3">Contact</a>
+    </div>
+    <p class="text-green-700">
+        © 2026 TempMailPro. All rights reserved.
+    </p>
+</footer>
 
 <!-- MODAL -->
 <div id="emailModal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center p-4">
@@ -150,124 +182,94 @@ body {
 </div>
 
 <script>
-const API = "https://api.mail.tm";
-let token = "";
-let currentEmail = "";
-let currentPassword = "";
+const API="https://api.mail.tm";
+let token="",currentEmail="",currentPassword="";
 
-/* Animate button */
-function animateButton(btn) {
+function animateButton(btn){
     btn.classList.remove("btn-pop");
     void btn.offsetWidth;
     btn.classList.add("btn-pop");
 }
 
-/* Random string */
-function randomString(length) {
-    const chars = "abcdefghijklmnopqrstuvwxyz1234567890";
-    return Array.from({length}, () => chars[Math.floor(Math.random()*chars.length)]).join("");
+function randomString(length){
+    const chars="abcdefghijklmnopqrstuvwxyz1234567890";
+    return Array.from({length},()=>chars[Math.floor(Math.random()*chars.length)]).join("");
 }
 
-/* Create new email */
-async function createNewEmail() {
-    document.getElementById("inboxList").innerHTML = "Generating...";
+async function createNewEmail(){
+    document.getElementById("inboxList").innerHTML="Generating...";
+    const domainRes=await fetch(API+"/domains");
+    const domainData=await domainRes.json();
+    const domain=domainData["hydra:member"][0].domain;
 
-    const domainRes = await fetch(API + "/domains");
-    const domainData = await domainRes.json();
-    const domain = domainData["hydra:member"][0].domain;
+    currentEmail=randomString(10)+"@"+domain;
+    currentPassword=randomString(12);
 
-    currentEmail = randomString(10) + "@" + domain;
-    currentPassword = randomString(12);
+    await fetch(API+"/accounts",{method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({address:currentEmail,password:currentPassword})});
 
-    await fetch(API + "/accounts", {
-        method: "POST",
-        headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({address:currentEmail,password:currentPassword})
-    });
+    const loginRes=await fetch(API+"/token",{method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({address:currentEmail,password:currentPassword})});
 
-    const loginRes = await fetch(API + "/token", {
-        method: "POST",
-        headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({address:currentEmail,password:currentPassword})
-    });
+    const loginData=await loginRes.json();
+    token=loginData.token;
 
-    const loginData = await loginRes.json();
-    token = loginData.token;
-
-    document.getElementById("emailDisplay").value = currentEmail;
+    document.getElementById("emailDisplay").value=currentEmail;
     loadInbox();
 }
 
-/* Load inbox */
-async function loadInbox() {
-    const inboxList = document.getElementById("inboxList");
-    inboxList.innerHTML = "Loading...";
+async function loadInbox(){
+    const inboxList=document.getElementById("inboxList");
+    inboxList.innerHTML="Loading...";
+    const res=await fetch(API+"/messages",{headers:{Authorization:"Bearer "+token}});
+    const data=await res.json();
+    const messages=data["hydra:member"];
+    inboxList.innerHTML="";
 
-    const res = await fetch(API + "/messages", {
-        headers: {Authorization:"Bearer "+token}
-    });
-
-    const data = await res.json();
-    const messages = data["hydra:member"];
-    inboxList.innerHTML = "";
-
-    if (!messages || messages.length === 0) {
-        inboxList.innerHTML = "<p class='text-green-500'>No messages yet.</p>";
+    if(!messages||messages.length===0){
+        inboxList.innerHTML="<p class='text-green-500'>No messages yet.</p>";
         return;
     }
 
     messages.forEach(msg=>{
         const div=document.createElement("div");
         div.className="message-item p-4 rounded-xl cursor-pointer";
-        div.innerHTML=`
-            <p class="font-bold">${msg.subject || "(No Subject)"}</p>
-            <p class="text-sm text-green-500">${msg.from.address}</p>
-        `;
+        div.innerHTML=`<p class="font-bold">${msg.subject||"(No Subject)"}</p>
+        <p class="text-sm text-green-500">${msg.from.address}</p>`;
         div.onclick=()=>openMessage(msg.id);
         inboxList.appendChild(div);
     });
 }
 
-/* Open message */
 async function openMessage(id){
-    const res=await fetch(API+"/messages/"+id,{
-        headers:{Authorization:"Bearer "+token}
-    });
+    const res=await fetch(API+"/messages/"+id,{headers:{Authorization:"Bearer "+token}});
     const msg=await res.json();
-
     document.getElementById("modalSubject").innerText=msg.subject||"(No Subject)";
     document.getElementById("modalFrom").innerText="From: "+msg.from.address;
     document.getElementById("modalContent").innerText=msg.text||msg.html||"";
-
     document.getElementById("emailModal").classList.remove("hidden");
     document.getElementById("emailModal").classList.add("flex");
 }
 
-/* Close modal */
 document.getElementById("closeModal").onclick=function(){
     animateButton(this);
     document.getElementById("emailModal").classList.add("hidden");
 };
 
-/* Copy */
 document.getElementById("copyBtn").onclick=async function(){
     animateButton(this);
     if(!currentEmail)return;
     await navigator.clipboard.writeText(currentEmail);
-
     const copyText=document.getElementById("copyText");
     const copyCheck=document.getElementById("copyCheck");
-
     copyText.classList.add("opacity-0");
     copyCheck.classList.remove("opacity-0");
-
     setTimeout(()=>{
         copyCheck.classList.add("opacity-0");
         copyText.classList.remove("opacity-0");
     },1200);
 };
 
-/* Other buttons */
 document.getElementById("refreshBtn").onclick=function(){
     animateButton(this);
     loadInbox();
@@ -278,7 +280,6 @@ document.getElementById("newEmailBtn").onclick=function(){
     createNewEmail();
 };
 
-/* Init */
 createNewEmail();
 </script>
 
