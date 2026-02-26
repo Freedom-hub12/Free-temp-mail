@@ -7,55 +7,96 @@
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>
-/* Universal Button Animation */
-.btn-press {
-    transition: transform 0.08s ease, box-shadow 0.08s ease;
+/* ===== Background ===== */
+body {
+    background: radial-gradient(circle at 20% 20%, #0f172a, #020617 60%);
 }
-.btn-press:active {
+
+/* ===== Glass Effect ===== */
+.glass {
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(34,197,94,0.25);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+}
+
+/* ===== Buttons ===== */
+.btn-glass {
+    background: rgba(34,197,94,0.15);
+    border: 1px solid rgba(34,197,94,0.4);
+    backdrop-filter: blur(10px);
+    transition: all 0.15s ease;
+}
+.btn-glass:hover {
+    background: rgba(34,197,94,0.3);
+}
+.btn-glass:active {
     transform: scale(0.95);
 }
-.btn-clicked {
-    animation: btnPop 0.18s ease;
+.btn-pop {
+    animation: pop 0.18s ease;
 }
-@keyframes btnPop {
+@keyframes pop {
     0% { transform: scale(1); }
     50% { transform: scale(1.08); }
     100% { transform: scale(1); }
 }
+
+/* ===== Inputs ===== */
+.input-glass {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(34,197,94,0.5);
+    backdrop-filter: blur(8px);
+}
+
+/* ===== Message Item ===== */
+.message-item {
+    background: rgba(15,23,42,0.6);
+    border: 1px solid rgba(34,197,94,0.2);
+    transition: all 0.2s ease;
+}
+.message-item:hover {
+    background: rgba(34,197,94,0.1);
+    transform: translateY(-2px);
+}
 </style>
 </head>
 
-<body class="bg-black text-green-400 min-h-screen font-sans">
+<body class="text-green-400 min-h-screen font-sans">
 
 <!-- TOP AD -->
-<div class="w-full bg-gray-900 text-center py-6 border-b border-green-700 text-green-500 font-semibold">
+<div class="w-full glass text-center py-6 text-green-500 font-semibold">
     Large Top Ad Placeholder (728x90 / 970x250)
 </div>
 
 <!-- HEADER -->
-<header class="text-center py-8">
-    <h1 class="text-4xl md:text-5xl font-extrabold tracking-wide text-green-400">
+<header class="text-center py-10">
+    <h1 class="text-5xl font-extrabold tracking-wide">
         TempMail<span class="text-white">Pro</span>
     </h1>
-    <p class="mt-3 text-green-600 text-lg">
-        Free Disposable Temporary Email Address
+    <p class="mt-3 text-green-500 text-lg">
+        Secure • Anonymous • Disposable Email
     </p>
 </header>
 
-<div class="max-w-6xl mx-auto px-4 pb-12 flex flex-col lg:flex-row gap-6">
+<div class="max-w-6xl mx-auto px-4 pb-16 flex flex-col lg:flex-row gap-8">
 
     <!-- MAIN -->
-    <div class="flex-1 bg-gray-950 border border-green-700 rounded-2xl shadow-2xl p-6">
+    <div class="flex-1 glass rounded-3xl p-8">
 
         <!-- Email Box -->
-        <div class="mb-6">
-            <label class="block mb-2 text-green-500 font-semibold">Your Temporary Email</label>
-            <div class="flex flex-col md:flex-row gap-3">
+        <div class="mb-8">
+            <label class="block mb-3 text-green-400 font-semibold text-lg">
+                Your Temporary Email
+            </label>
+
+            <div class="flex flex-col md:flex-row gap-4">
                 <input id="emailDisplay" type="text" readonly
-                    class="flex-1 bg-black border border-green-600 rounded-lg p-4 text-green-400 text-lg" />
-                
+                    class="flex-1 input-glass rounded-xl p-4 text-green-300 text-lg outline-none" />
+
                 <button id="copyBtn"
-                    class="btn-press relative overflow-hidden bg-green-600 hover:bg-green-500 text-black font-bold px-6 py-3 rounded-lg">
+                    class="btn-glass px-6 py-3 rounded-xl font-bold relative overflow-hidden">
                     <span id="copyText">Copy</span>
                     <span id="copyCheck" class="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300">
                         ✓ Copied
@@ -63,33 +104,33 @@
                 </button>
 
                 <button id="newEmailBtn"
-                    class="btn-press bg-white hover:bg-gray-200 text-black font-bold px-6 py-3 rounded-lg">
+                    class="btn-glass px-6 py-3 rounded-xl font-bold">
                     New Email
                 </button>
             </div>
         </div>
 
         <!-- Controls -->
-        <div class="flex gap-3 mb-6">
+        <div class="flex gap-4 mb-8">
             <button id="refreshBtn"
-                class="btn-press bg-green-700 hover:bg-green-600 text-black font-semibold px-5 py-2 rounded-lg">
+                class="btn-glass px-5 py-2 rounded-xl font-semibold">
                 Refresh Inbox
             </button>
         </div>
 
         <!-- Inbox -->
         <div>
-            <h2 class="text-xl font-bold mb-4 text-green-400 border-b border-green-700 pb-2">
+            <h2 class="text-2xl font-bold mb-4 border-b border-green-700 pb-3">
                 Inbox
             </h2>
-            <div id="inboxList" class="space-y-3"></div>
+            <div id="inboxList" class="space-y-4"></div>
         </div>
 
     </div>
 
     <!-- SIDEBAR -->
-    <aside class="w-full lg:w-72 bg-gray-950 border border-green-700 rounded-2xl p-6 text-center">
-        <div class="bg-black border border-green-600 h-64 flex items-center justify-center text-green-600 font-semibold">
+    <aside class="w-full lg:w-80 glass rounded-3xl p-8 text-center">
+        <div class="h-64 flex items-center justify-center text-green-500 font-semibold">
             Sidebar Ad Placeholder (300x250)
         </div>
     </aside>
@@ -97,11 +138,13 @@
 </div>
 
 <!-- MODAL -->
-<div id="emailModal" class="fixed inset-0 bg-black bg-opacity-80 hidden items-center justify-center p-4">
-    <div class="bg-gray-950 border border-green-700 w-full max-w-2xl rounded-xl p-6 relative">
-        <button id="closeModal" class="btn-press absolute top-4 right-4 text-green-500 hover:text-white text-xl">✕</button>
-        <h3 id="modalSubject" class="text-2xl font-bold mb-2"></h3>
-        <p id="modalFrom" class="text-green-600 mb-4"></p>
+<div id="emailModal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center p-4">
+    <div class="glass w-full max-w-2xl rounded-3xl p-8 relative">
+        <button id="closeModal" class="btn-glass absolute top-5 right-5 px-3 py-1 rounded-lg">
+            ✕
+        </button>
+        <h3 id="modalSubject" class="text-2xl font-bold mb-3"></h3>
+        <p id="modalFrom" class="text-green-500 mb-4"></p>
         <div id="modalContent" class="text-green-300 whitespace-pre-wrap break-words"></div>
     </div>
 </div>
@@ -112,57 +155,47 @@ let token = "";
 let currentEmail = "";
 let currentPassword = "";
 
-/* Add click animation to ALL buttons */
+/* Animate button */
 function animateButton(btn) {
-    btn.classList.remove("btn-clicked");
-    void btn.offsetWidth; // force reflow
-    btn.classList.add("btn-clicked");
+    btn.classList.remove("btn-pop");
+    void btn.offsetWidth;
+    btn.classList.add("btn-pop");
 }
 
 /* Random string */
 function randomString(length) {
     const chars = "abcdefghijklmnopqrstuvwxyz1234567890";
-    let result = "";
-    for (let i = 0; i < length; i++) {
-        result += chars[Math.floor(Math.random() * chars.length)];
-    }
-    return result;
+    return Array.from({length}, () => chars[Math.floor(Math.random()*chars.length)]).join("");
 }
 
 /* Create new email */
 async function createNewEmail() {
-    try {
-        document.getElementById("inboxList").innerHTML = "Generating...";
+    document.getElementById("inboxList").innerHTML = "Generating...";
 
-        const domainRes = await fetch(API + "/domains");
-        const domainData = await domainRes.json();
-        const domain = domainData["hydra:member"][0].domain;
+    const domainRes = await fetch(API + "/domains");
+    const domainData = await domainRes.json();
+    const domain = domainData["hydra:member"][0].domain;
 
-        currentEmail = randomString(10) + "@" + domain;
-        currentPassword = randomString(12);
+    currentEmail = randomString(10) + "@" + domain;
+    currentPassword = randomString(12);
 
-        await fetch(API + "/accounts", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ address: currentEmail, password: currentPassword })
-        });
+    await fetch(API + "/accounts", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({address:currentEmail,password:currentPassword})
+    });
 
-        const loginRes = await fetch(API + "/token", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ address: currentEmail, password: currentPassword })
-        });
+    const loginRes = await fetch(API + "/token", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({address:currentEmail,password:currentPassword})
+    });
 
-        const loginData = await loginRes.json();
-        token = loginData.token;
+    const loginData = await loginRes.json();
+    token = loginData.token;
 
-        document.getElementById("emailDisplay").value = currentEmail;
-        loadInbox();
-
-    } catch (err) {
-        alert("Error creating email");
-        console.error(err);
-    }
+    document.getElementById("emailDisplay").value = currentEmail;
+    loadInbox();
 }
 
 /* Load inbox */
@@ -171,81 +204,76 @@ async function loadInbox() {
     inboxList.innerHTML = "Loading...";
 
     const res = await fetch(API + "/messages", {
-        headers: { Authorization: "Bearer " + token }
+        headers: {Authorization:"Bearer "+token}
     });
 
     const data = await res.json();
     const messages = data["hydra:member"];
-
     inboxList.innerHTML = "";
 
     if (!messages || messages.length === 0) {
-        inboxList.innerHTML = "<p class='text-green-600'>No messages yet.</p>";
+        inboxList.innerHTML = "<p class='text-green-500'>No messages yet.</p>";
         return;
     }
 
-    messages.forEach(msg => {
-        const div = document.createElement("div");
-        div.className = "border border-green-700 p-4 rounded-lg hover:bg-black cursor-pointer transition";
-        div.innerHTML = `
+    messages.forEach(msg=>{
+        const div=document.createElement("div");
+        div.className="message-item p-4 rounded-xl cursor-pointer";
+        div.innerHTML=`
             <p class="font-bold">${msg.subject || "(No Subject)"}</p>
-            <p class="text-sm text-green-600">${msg.from.address}</p>
+            <p class="text-sm text-green-500">${msg.from.address}</p>
         `;
-        div.onclick = () => openMessage(msg.id);
+        div.onclick=()=>openMessage(msg.id);
         inboxList.appendChild(div);
     });
 }
 
 /* Open message */
-async function openMessage(id) {
-    const res = await fetch(API + "/messages/" + id, {
-        headers: { Authorization: "Bearer " + token }
+async function openMessage(id){
+    const res=await fetch(API+"/messages/"+id,{
+        headers:{Authorization:"Bearer "+token}
     });
+    const msg=await res.json();
 
-    const msg = await res.json();
-
-    document.getElementById("modalSubject").innerText = msg.subject || "(No Subject)";
-    document.getElementById("modalFrom").innerText = "From: " + msg.from.address;
-    document.getElementById("modalContent").innerText = msg.text || msg.html || "";
+    document.getElementById("modalSubject").innerText=msg.subject||"(No Subject)";
+    document.getElementById("modalFrom").innerText="From: "+msg.from.address;
+    document.getElementById("modalContent").innerText=msg.text||msg.html||"";
 
     document.getElementById("emailModal").classList.remove("hidden");
     document.getElementById("emailModal").classList.add("flex");
 }
 
 /* Close modal */
-document.getElementById("closeModal").onclick = function() {
+document.getElementById("closeModal").onclick=function(){
     animateButton(this);
     document.getElementById("emailModal").classList.add("hidden");
 };
 
-/* Copy button */
-document.getElementById("copyBtn").onclick = async function() {
+/* Copy */
+document.getElementById("copyBtn").onclick=async function(){
     animateButton(this);
-    if (!currentEmail) return;
-
+    if(!currentEmail)return;
     await navigator.clipboard.writeText(currentEmail);
 
-    const copyText = document.getElementById("copyText");
-    const copyCheck = document.getElementById("copyCheck");
+    const copyText=document.getElementById("copyText");
+    const copyCheck=document.getElementById("copyCheck");
 
     copyText.classList.add("opacity-0");
     copyCheck.classList.remove("opacity-0");
-    copyCheck.classList.add("opacity-100");
 
-    setTimeout(() => {
-        copyCheck.classList.remove("opacity-100");
+    setTimeout(()=>{
         copyCheck.classList.add("opacity-0");
         copyText.classList.remove("opacity-0");
-    }, 1200);
+    },1200);
 };
 
 /* Other buttons */
-document.getElementById("refreshBtn").onclick = function() {
+document.getElementById("refreshBtn").onclick=function(){
     animateButton(this);
     loadInbox();
 };
 
-document.getElementById("newEmailBtn").onclick = function() {
+document.getElementById("newEmailBtn").onclick=function(){
     animateButton(this);
     createNewEmail();
 };
