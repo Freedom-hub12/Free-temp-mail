@@ -5,6 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>TempMail Pro - Free Temporary Email</title>
 <script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+/* Universal Button Animation */
+.btn-press {
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+.btn-press:active {
+    transform: scale(0.95);
+}
+.btn-clicked {
+    animation: btnPop 0.18s ease;
+}
+@keyframes btnPop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+}
+</style>
 </head>
 
 <body class="bg-black text-green-400 min-h-screen font-sans">
@@ -35,12 +53,17 @@
             <div class="flex flex-col md:flex-row gap-3">
                 <input id="emailDisplay" type="text" readonly
                     class="flex-1 bg-black border border-green-600 rounded-lg p-4 text-green-400 text-lg" />
+                
                 <button id="copyBtn"
-                    class="bg-green-600 hover:bg-green-500 text-black font-bold px-6 py-3 rounded-lg transition">
-                    Copy
+                    class="btn-press relative overflow-hidden bg-green-600 hover:bg-green-500 text-black font-bold px-6 py-3 rounded-lg">
+                    <span id="copyText">Copy</span>
+                    <span id="copyCheck" class="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300">
+                        ✓ Copied
+                    </span>
                 </button>
+
                 <button id="newEmailBtn"
-                    class="bg-white hover:bg-gray-200 text-black font-bold px-6 py-3 rounded-lg transition">
+                    class="btn-press bg-white hover:bg-gray-200 text-black font-bold px-6 py-3 rounded-lg">
                     New Email
                 </button>
             </div>
@@ -49,7 +72,7 @@
         <!-- Controls -->
         <div class="flex gap-3 mb-6">
             <button id="refreshBtn"
-                class="bg-green-700 hover:bg-green-600 text-black font-semibold px-5 py-2 rounded-lg transition">
+                class="btn-press bg-green-700 hover:bg-green-600 text-black font-semibold px-5 py-2 rounded-lg">
                 Refresh Inbox
             </button>
         </div>
@@ -76,7 +99,7 @@
 <!-- MODAL -->
 <div id="emailModal" class="fixed inset-0 bg-black bg-opacity-80 hidden items-center justify-center p-4">
     <div class="bg-gray-950 border border-green-700 w-full max-w-2xl rounded-xl p-6 relative">
-        <button id="closeModal" class="absolute top-4 right-4 text-green-500 hover:text-white text-xl">✕</button>
+        <button id="closeModal" class="btn-press absolute top-4 right-4 text-green-500 hover:text-white text-xl">✕</button>
         <h3 id="modalSubject" class="text-2xl font-bold mb-2"></h3>
         <p id="modalFrom" class="text-green-600 mb-4"></p>
         <div id="modalContent" class="text-green-300 whitespace-pre-wrap break-words"></div>
@@ -89,7 +112,14 @@ let token = "";
 let currentEmail = "";
 let currentPassword = "";
 
-// Random string generator
+/* Add click animation to ALL buttons */
+function animateButton(btn) {
+    btn.classList.remove("btn-clicked");
+    void btn.offsetWidth; // force reflow
+    btn.classList.add("btn-clicked");
+}
+
+/* Random string */
 function randomString(length) {
     const chars = "abcdefghijklmnopqrstuvwxyz1234567890";
     let result = "";
@@ -99,7 +129,7 @@ function randomString(length) {
     return result;
 }
 
-// Create new email account
+/* Create new email */
 async function createNewEmail() {
     try {
         document.getElementById("inboxList").innerHTML = "Generating...";
@@ -114,19 +144,13 @@ async function createNewEmail() {
         await fetch(API + "/accounts", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                address: currentEmail,
-                password: currentPassword
-            })
+            body: JSON.stringify({ address: currentEmail, password: currentPassword })
         });
 
         const loginRes = await fetch(API + "/token", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                address: currentEmail,
-                password: currentPassword
-            })
+            body: JSON.stringify({ address: currentEmail, password: currentPassword })
         });
 
         const loginData = await loginRes.json();
@@ -141,7 +165,7 @@ async function createNewEmail() {
     }
 }
 
-// Load inbox
+/* Load inbox */
 async function loadInbox() {
     const inboxList = document.getElementById("inboxList");
     inboxList.innerHTML = "Loading...";
@@ -172,7 +196,7 @@ async function loadInbox() {
     });
 }
 
-// Open message
+/* Open message */
 async function openMessage(id) {
     const res = await fetch(API + "/messages/" + id, {
         headers: { Authorization: "Bearer " + token }
@@ -188,21 +212,45 @@ async function openMessage(id) {
     document.getElementById("emailModal").classList.add("flex");
 }
 
-// Close modal
-document.getElementById("closeModal").onclick = () => {
+/* Close modal */
+document.getElementById("closeModal").onclick = function() {
+    animateButton(this);
     document.getElementById("emailModal").classList.add("hidden");
 };
 
-// Copy email
-document.getElementById("copyBtn").onclick = () => {
-    navigator.clipboard.writeText(currentEmail);
+/* Copy button */
+document.getElementById("copyBtn").onclick = async function() {
+    animateButton(this);
+    if (!currentEmail) return;
+
+    await navigator.clipboard.writeText(currentEmail);
+
+    const copyText = document.getElementById("copyText");
+    const copyCheck = document.getElementById("copyCheck");
+
+    copyText.classList.add("opacity-0");
+    copyCheck.classList.remove("opacity-0");
+    copyCheck.classList.add("opacity-100");
+
+    setTimeout(() => {
+        copyCheck.classList.remove("opacity-100");
+        copyCheck.classList.add("opacity-0");
+        copyText.classList.remove("opacity-0");
+    }, 1200);
 };
 
-// Buttons
-document.getElementById("refreshBtn").onclick = loadInbox;
-document.getElementById("newEmailBtn").onclick = createNewEmail;
+/* Other buttons */
+document.getElementById("refreshBtn").onclick = function() {
+    animateButton(this);
+    loadInbox();
+};
 
-// Init
+document.getElementById("newEmailBtn").onclick = function() {
+    animateButton(this);
+    createNewEmail();
+};
+
+/* Init */
 createNewEmail();
 </script>
 
