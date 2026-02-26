@@ -3,271 +3,295 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>TempMail Pro - Free Temporary Email</title>
+<title>TempMail Pro - Futuristic Temporary Email</title>
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>
-/* ===== Background ===== */
+/* ================= BACKGROUND ================= */
 body {
-    background: radial-gradient(circle at 20% 20%, #0f172a, #020617 60%);
+    background: radial-gradient(circle at 20% 20%, #0f172a 0%, #020617 60%, #000 100%);
+    perspective: 1200px;
 }
 
-/* ===== Glass Effect ===== */
-.glass {
-    background: rgba(15, 23, 42, 0.55);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border: 1px solid rgba(34,197,94,0.25);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
-}
-
-/* ===== Buttons ===== */
-.btn-glass {
+/* Floating glow orbs */
+.bg-glow::before,
+.bg-glow::after {
+    content: "";
+    position: fixed;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
     background: rgba(34,197,94,0.15);
+    filter: blur(120px);
+    z-index: -1;
+}
+.bg-glow::before { top: -100px; left: -100px; }
+.bg-glow::after { bottom: -100px; right: -100px; }
+
+/* ================= GLASS 3D CARD ================= */
+.glass-3d {
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(34,197,94,0.3);
+    box-shadow:
+        0 0 20px rgba(34,197,94,0.15),
+        0 15px 40px rgba(0,0,0,0.7);
+    transform-style: preserve-3d;
+    transition: transform 0.4s ease;
+}
+.glass-3d:hover {
+    transform: rotateX(3deg) rotateY(-3deg);
+}
+
+/* ================= BUTTONS ================= */
+.btn-futuristic {
+    background: linear-gradient(145deg, rgba(34,197,94,0.25), rgba(34,197,94,0.05));
     border: 1px solid rgba(34,197,94,0.4);
     backdrop-filter: blur(10px);
     transition: all 0.15s ease;
+    box-shadow: 0 0 10px rgba(34,197,94,0.2);
 }
-.btn-glass:hover {
-    background: rgba(34,197,94,0.3);
+.btn-futuristic:hover {
+    box-shadow: 0 0 20px rgba(34,197,94,0.5);
 }
-.btn-glass:active {
+.btn-futuristic:active {
     transform: scale(0.95);
 }
 .btn-pop {
-    animation: pop 0.18s ease;
+    animation: pop 0.2s ease;
 }
 @keyframes pop {
     0% { transform: scale(1); }
-    50% { transform: scale(1.08); }
+    50% { transform: scale(1.1); }
     100% { transform: scale(1); }
 }
 
-/* ===== Inputs ===== */
-.input-glass {
+/* ================= INPUT ================= */
+.input-futuristic {
     background: rgba(0,0,0,0.4);
     border: 1px solid rgba(34,197,94,0.5);
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(15px);
+    box-shadow: inset 0 0 15px rgba(34,197,94,0.1);
 }
 
-/* ===== Message Item ===== */
-.message-item {
-    background: rgba(15,23,42,0.6);
-    border: 1px solid rgba(34,197,94,0.2);
+/* ================= COPY ICON ================= */
+.icon-btn {
+    background: rgba(34,197,94,0.2);
+    border-left: 1px solid rgba(34,197,94,0.4);
     transition: all 0.2s ease;
+}
+.icon-btn:hover { box-shadow: 0 0 15px rgba(34,197,94,0.6); }
+.icon-animate {
+    animation: bounce 0.25s ease;
+}
+@keyframes bounce {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.35); }
+    100% { transform: scale(1); }
+}
+
+/* ================= MESSAGE ================= */
+.message-item {
+    background: rgba(15,23,42,0.7);
+    border: 1px solid rgba(34,197,94,0.2);
+    transition: all 0.25s ease;
 }
 .message-item:hover {
     background: rgba(34,197,94,0.1);
-    transform: translateY(-2px);
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 0 15px rgba(34,197,94,0.4);
 }
 
-/* ===== Footer Links ===== */
-.footer-link {
-    color: #22c55e;
-    transition: 0.2s;
-}
-.footer-link:hover {
-    color: white;
-}
+/* Footer */
+.footer-link { color:#22c55e; transition:0.3s; }
+.footer-link:hover { color:white; text-shadow:0 0 10px #22c55e; }
 </style>
 </head>
 
-<body class="text-green-400 min-h-screen font-sans flex flex-col">
+<body class="text-green-400 min-h-screen font-sans bg-glow flex flex-col">
 
-<!-- HEADER -->
-<header class="text-center py-10">
-    <h1 class="text-5xl font-extrabold tracking-wide">
-        TempMail<span class="text-white">Pro</span>
-    </h1>
-    <p class="mt-3 text-green-500 text-lg">
-        Secure • Anonymous • Disposable Email
-    </p>
+<header class="text-center py-12">
+<h1 class="text-5xl font-extrabold tracking-widest text-green-400 drop-shadow-lg">
+TempMail<span class="text-white">Pro</span>
+</h1>
+<p class="mt-4 text-green-500 text-lg tracking-wide">
+Futuristic • Anonymous • Disposable Email
+</p>
 </header>
 
-<div class="max-w-6xl mx-auto px-4 pb-16 flex flex-col lg:flex-row gap-8 flex-grow">
+<div class="max-w-6xl mx-auto px-4 pb-16 flex flex-col lg:flex-row gap-10 flex-grow">
 
-    <!-- MAIN -->
-    <div class="flex-1 glass rounded-3xl p-8">
+<div class="flex-1 glass-3d rounded-3xl p-10">
 
-        <!-- Email Box -->
-        <div class="mb-8">
-            <label class="block mb-3 text-green-400 font-semibold text-lg">
-                Your Temporary Email
-            </label>
+<label class="block mb-4 text-green-400 font-semibold text-xl">
+Your Temporary Email
+</label>
 
-            <div class="flex flex-col md:flex-row gap-4">
-                <input id="emailDisplay" type="text" readonly
-                    class="flex-1 input-glass rounded-xl p-4 text-green-300 text-lg outline-none" />
+<div class="flex flex-col md:flex-row gap-4 mb-8">
 
-                <button id="copyBtn"
-                    class="btn-glass px-6 py-3 rounded-xl font-bold relative overflow-hidden">
-                    <span id="copyText">Copy</span>
-                    <span id="copyCheck" class="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300">
-                        ✓ Copied
-                    </span>
-                </button>
+<div class="flex flex-1">
+<input id="emailDisplay" type="text" readonly
+class="flex-1 input-futuristic rounded-l-xl p-4 text-green-300 text-lg outline-none" />
+<button id="copyIconBtn"
+class="icon-btn px-4 rounded-r-xl flex items-center justify-center">
+<svg id="copyIcon" xmlns="http://www.w3.org/2000/svg"
+class="w-6 h-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+d="M8 16h8M8 12h8m-6 8h6a2 2 0 002-2V6a2 2 0 00-2-2h-6l-4 4v10a2 2 0 002 2z"/>
+</svg>
+</button>
+</div>
 
-                <button id="newEmailBtn"
-                    class="btn-glass px-6 py-3 rounded-xl font-bold">
-                    New Email
-                </button>
-            </div>
-        </div>
+<button id="copyBtn"
+class="btn-futuristic px-6 py-3 rounded-xl font-bold relative overflow-hidden">
+<span id="copyText">Copy</span>
+<span id="copyCheck"
+class="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300">
+✓ Copied
+</span>
+</button>
 
-        <!-- AD BETWEEN EMAIL & INBOX -->
-        <div class="glass rounded-2xl p-6 text-center text-green-500 font-semibold mb-8">
-            Mid Content Ad Placeholder (Responsive Banner)
-        </div>
-
-        <!-- Controls -->
-        <div class="flex gap-4 mb-8">
-            <button id="refreshBtn"
-                class="btn-glass px-5 py-2 rounded-xl font-semibold">
-                Refresh Inbox
-            </button>
-        </div>
-
-        <!-- Inbox -->
-        <div>
-            <h2 class="text-2xl font-bold mb-4 border-b border-green-700 pb-3">
-                Inbox
-            </h2>
-            <div id="inboxList" class="space-y-4"></div>
-        </div>
-
-    </div>
-
-    <!-- SIDEBAR -->
-    <aside class="w-full lg:w-80 glass rounded-3xl p-8 text-center">
-        <div class="h-64 flex items-center justify-center text-green-500 font-semibold">
-            Sidebar Ad Placeholder (300x250)
-        </div>
-    </aside>
+<button id="newEmailBtn"
+class="btn-futuristic px-6 py-3 rounded-xl font-bold">
+New Email
+</button>
 
 </div>
 
-<!-- FOOTER -->
-<footer class="glass mt-12 py-10 text-center text-sm text-green-500">
-    <div class="mb-4">
-        <a href="#" class="footer-link mx-3">Terms of Service</a>
-        <a href="#" class="footer-link mx-3">Privacy Policy</a>
-        <a href="#" class="footer-link mx-3">DMCA</a>
-        <a href="#" class="footer-link mx-3">Contact</a>
-    </div>
-    <p class="text-green-700">
-        © 2026 TempMailPro. All rights reserved.
-    </p>
+<div class="btn-futuristic rounded-2xl p-6 text-center text-green-500 font-semibold mb-8">
+Mid Content Ad Placeholder
+</div>
+
+<button id="refreshBtn"
+class="btn-futuristic px-5 py-2 rounded-xl font-semibold mb-6">
+Refresh Inbox
+</button>
+
+<h2 class="text-2xl font-bold mb-4 border-b border-green-700 pb-3">
+Inbox
+</h2>
+
+<div id="inboxList" class="space-y-4"></div>
+
+<div class="btn-futuristic rounded-2xl p-6 text-center text-green-500 font-semibold mt-10">
+Bottom Content Ad Placeholder
+</div>
+
+</div>
+
+<aside class="w-full lg:w-80 glass-3d rounded-3xl p-8 text-center">
+<div class="h-64 flex items-center justify-center text-green-500 font-semibold">
+Sidebar Ad Placeholder (300x250)
+</div>
+</aside>
+
+</div>
+
+<footer class="glass-3d mt-12 py-10 text-center text-sm text-green-500">
+<div class="mb-4">
+<a href="#" class="footer-link mx-3">Terms of Service</a>
+<a href="#" class="footer-link mx-3">Privacy Policy</a>
+<a href="#" class="footer-link mx-3">DMCA</a>
+<a href="#" class="footer-link mx-3">Contact</a>
+</div>
+<p class="text-green-700">© 2026 TempMailPro. All rights reserved.</p>
 </footer>
-
-<!-- MODAL -->
-<div id="emailModal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center p-4">
-    <div class="glass w-full max-w-2xl rounded-3xl p-8 relative">
-        <button id="closeModal" class="btn-glass absolute top-5 right-5 px-3 py-1 rounded-lg">
-            ✕
-        </button>
-        <h3 id="modalSubject" class="text-2xl font-bold mb-3"></h3>
-        <p id="modalFrom" class="text-green-500 mb-4"></p>
-        <div id="modalContent" class="text-green-300 whitespace-pre-wrap break-words"></div>
-    </div>
-</div>
 
 <script>
 const API="https://api.mail.tm";
 let token="",currentEmail="",currentPassword="";
 
 function animateButton(btn){
-    btn.classList.remove("btn-pop");
-    void btn.offsetWidth;
-    btn.classList.add("btn-pop");
+btn.classList.remove("btn-pop");
+void btn.offsetWidth;
+btn.classList.add("btn-pop");
+}
+
+function animateIcon(icon){
+icon.classList.remove("icon-animate");
+void icon.offsetWidth;
+icon.classList.add("icon-animate");
 }
 
 function randomString(length){
-    const chars="abcdefghijklmnopqrstuvwxyz1234567890";
-    return Array.from({length},()=>chars[Math.floor(Math.random()*chars.length)]).join("");
+const chars="abcdefghijklmnopqrstuvwxyz1234567890";
+return Array.from({length},()=>chars[Math.floor(Math.random()*chars.length)]).join("");
 }
 
 async function createNewEmail(){
-    document.getElementById("inboxList").innerHTML="Generating...";
-    const domainRes=await fetch(API+"/domains");
-    const domainData=await domainRes.json();
-    const domain=domainData["hydra:member"][0].domain;
+document.getElementById("inboxList").innerHTML="Generating...";
+const domainRes=await fetch(API+"/domains");
+const domainData=await domainRes.json();
+const domain=domainData["hydra:member"][0].domain;
 
-    currentEmail=randomString(10)+"@"+domain;
-    currentPassword=randomString(12);
+currentEmail=randomString(10)+"@"+domain;
+currentPassword=randomString(12);
 
-    await fetch(API+"/accounts",{method:"POST",headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({address:currentEmail,password:currentPassword})});
+await fetch(API+"/accounts",{method:"POST",headers:{"Content-Type":"application/json"},
+body:JSON.stringify({address:currentEmail,password:currentPassword})});
 
-    const loginRes=await fetch(API+"/token",{method:"POST",headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({address:currentEmail,password:currentPassword})});
+const loginRes=await fetch(API+"/token",{method:"POST",headers:{"Content-Type":"application/json"},
+body:JSON.stringify({address:currentEmail,password:currentPassword})});
 
-    const loginData=await loginRes.json();
-    token=loginData.token;
+const loginData=await loginRes.json();
+token=loginData.token;
 
-    document.getElementById("emailDisplay").value=currentEmail;
-    loadInbox();
+document.getElementById("emailDisplay").value=currentEmail;
+loadInbox();
 }
 
 async function loadInbox(){
-    const inboxList=document.getElementById("inboxList");
-    inboxList.innerHTML="Loading...";
-    const res=await fetch(API+"/messages",{headers:{Authorization:"Bearer "+token}});
-    const data=await res.json();
-    const messages=data["hydra:member"];
-    inboxList.innerHTML="";
-
-    if(!messages||messages.length===0){
-        inboxList.innerHTML="<p class='text-green-500'>No messages yet.</p>";
-        return;
-    }
-
-    messages.forEach(msg=>{
-        const div=document.createElement("div");
-        div.className="message-item p-4 rounded-xl cursor-pointer";
-        div.innerHTML=`<p class="font-bold">${msg.subject||"(No Subject)"}</p>
-        <p class="text-sm text-green-500">${msg.from.address}</p>`;
-        div.onclick=()=>openMessage(msg.id);
-        inboxList.appendChild(div);
-    });
+const inboxList=document.getElementById("inboxList");
+inboxList.innerHTML="Loading...";
+const res=await fetch(API+"/messages",{headers:{Authorization:"Bearer "+token}});
+const data=await res.json();
+const messages=data["hydra:member"];
+inboxList.innerHTML="";
+if(!messages||messages.length===0){
+inboxList.innerHTML="<p class='text-green-500'>No messages yet.</p>";
+return;
+}
+messages.forEach(msg=>{
+const div=document.createElement("div");
+div.className="message-item p-4 rounded-xl cursor-pointer";
+div.innerHTML=`<p class="font-bold">${msg.subject||"(No Subject)"}</p>
+<p class="text-sm text-green-500">${msg.from.address}</p>`;
+inboxList.appendChild(div);
+});
 }
 
-async function openMessage(id){
-    const res=await fetch(API+"/messages/"+id,{headers:{Authorization:"Bearer "+token}});
-    const msg=await res.json();
-    document.getElementById("modalSubject").innerText=msg.subject||"(No Subject)";
-    document.getElementById("modalFrom").innerText="From: "+msg.from.address;
-    document.getElementById("modalContent").innerText=msg.text||msg.html||"";
-    document.getElementById("emailModal").classList.remove("hidden");
-    document.getElementById("emailModal").classList.add("flex");
+async function copyEmail(){
+if(!currentEmail)return;
+await navigator.clipboard.writeText(currentEmail);
 }
-
-document.getElementById("closeModal").onclick=function(){
-    animateButton(this);
-    document.getElementById("emailModal").classList.add("hidden");
-};
 
 document.getElementById("copyBtn").onclick=async function(){
-    animateButton(this);
-    if(!currentEmail)return;
-    await navigator.clipboard.writeText(currentEmail);
-    const copyText=document.getElementById("copyText");
-    const copyCheck=document.getElementById("copyCheck");
-    copyText.classList.add("opacity-0");
-    copyCheck.classList.remove("opacity-0");
-    setTimeout(()=>{
-        copyCheck.classList.add("opacity-0");
-        copyText.classList.remove("opacity-0");
-    },1200);
+animateButton(this);
+await copyEmail();
+const copyText=document.getElementById("copyText");
+const copyCheck=document.getElementById("copyCheck");
+copyText.classList.add("opacity-0");
+copyCheck.classList.remove("opacity-0");
+setTimeout(()=>{
+copyCheck.classList.add("opacity-0");
+copyText.classList.remove("opacity-0");
+},1200);
+};
+
+document.getElementById("copyIconBtn").onclick=async function(){
+animateIcon(document.getElementById("copyIcon"));
+await copyEmail();
 };
 
 document.getElementById("refreshBtn").onclick=function(){
-    animateButton(this);
-    loadInbox();
+animateButton(this);
+loadInbox();
 };
 
 document.getElementById("newEmailBtn").onclick=function(){
-    animateButton(this);
-    createNewEmail();
+animateButton(this);
+createNewEmail();
 };
 
 createNewEmail();
