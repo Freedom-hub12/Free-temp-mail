@@ -23,20 +23,55 @@ box-shadow:0 0 20px rgba(34,197,94,0.15),
 0 15px 40px rgba(0,0,0,0.7);
 }
 
+/* BUTTONS */
 .btn-futuristic{
 background: linear-gradient(145deg, rgba(34,197,94,0.25), rgba(34,197,94,0.05));
 border:1px solid rgba(34,197,94,0.4);
 backdrop-filter: blur(10px);
-transition:.2s;
+transition:.15s;
 }
-.btn-futuristic:hover{ box-shadow:0 0 20px rgba(34,197,94,0.5); }
+.btn-futuristic:active{
+transform:scale(.93);
+box-shadow:0 0 25px rgba(34,197,94,0.7);
+}
+
+/* COPY SUCCESS */
+.success-flash{
+animation:flash .5s ease;
+}
+@keyframes flash{
+0%{box-shadow:0 0 0 rgba(34,197,94,0);}
+50%{box-shadow:0 0 25px rgba(34,197,94,.8);}
+100%{box-shadow:0 0 0 rgba(34,197,94,0);}
+}
 
 .input-futuristic{
 background:rgba(0,0,0,.4);
 border:1px solid rgba(34,197,94,.5);
 backdrop-filter:blur(15px);
 text-align:center;
+padding-right:45px;
 }
+
+.copy-icon-btn{
+position:absolute;
+right:10px;
+top:50%;
+transform:translateY(-50%);
+cursor:pointer;
+transition:.2s;
+}
+.copy-icon-btn:active{
+transform:translateY(-50%) scale(.8);
+}
+
+.icon{
+width:20px;
+height:20px;
+stroke:#22c55e;
+transition:.3s;
+}
+.hidden{ display:none; }
 
 .lang-menu{
 position:absolute;
@@ -72,7 +107,6 @@ text-shadow:0 0 10px #22c55e;
 
 <body class="text-green-400 min-h-screen font-sans flex flex-col items-center">
 
-<!-- TOP BAR -->
 <div class="w-full flex justify-between items-center px-6 py-4">
 <h1 class="text-2xl font-extrabold tracking-widest">
 TempMail<span class="text-white">Pro</span>
@@ -84,10 +118,10 @@ TempMail<span class="text-white">Pro</span>
 </button>
 
 <div id="langMenu" class="lang-menu glass-3d rounded-xl overflow-hidden">
-<button onclick="setLanguage('en')" class="btn-futuristic w-full p-2">English</button>
-<button onclick="setLanguage('fr')" class="btn-futuristic w-full p-2">Français</button>
-<button onclick="setLanguage('es')" class="btn-futuristic w-full p-2">Español</button>
-<button onclick="setLanguage('ar')" class="btn-futuristic w-full p-2">العربية</button>
+<button class="btn-futuristic w-full p-2">English</button>
+<button class="btn-futuristic w-full p-2">Français</button>
+<button class="btn-futuristic w-full p-2">Español</button>
+<button class="btn-futuristic w-full p-2">العربية</button>
 </div>
 </div>
 </div>
@@ -95,58 +129,66 @@ TempMail<span class="text-white">Pro</span>
 <div class="max-w-5xl w-full px-4 pb-12">
 <div class="glass-3d rounded-3xl p-8 flex flex-col items-center">
 
-<label id="labelEmail" class="mb-3 text-lg font-semibold">
+<label class="mb-3 text-lg font-semibold">
 Your Temporary Email
 </label>
 
+<div class="relative w-full mb-4">
 <input id="emailDisplay" type="text" readonly
-class="input-futuristic rounded-xl p-3 text-green-300 w-full mb-4"/>
+class="input-futuristic rounded-xl p-3 text-green-300 w-full"/>
+
+<!-- COPY ICON -->
+<div id="copyIconBtn" class="copy-icon-btn">
+<svg id="copyIcon" class="icon" fill="none" viewBox="0 0 24 24" stroke-width="2">
+<path stroke-linecap="round" stroke-linejoin="round"
+d="M8 16h8M8 12h8m-6 8h6a2 2 0 002-2V6a2 2 0 00-2-2h-6l-4 4v10a2 2 0 002 2z"/>
+</svg>
+
+<svg id="doneIcon" class="icon hidden" fill="none" viewBox="0 0 24 24" stroke-width="2">
+<path stroke-linecap="round" stroke-linejoin="round"
+d="M5 13l4 4L19 7"/>
+</svg>
+</div>
+</div>
 
 <div class="flex gap-3 mb-5 flex-wrap justify-center">
-<button id="copyBtn" class="btn-futuristic px-5 py-2 rounded-xl font-bold text-sm">
-Copy
+<button id="copyBtn" class="btn-futuristic px-5 py-2 rounded-xl font-bold text-sm flex items-center gap-2">
+<span id="copyText">Copy</span>
+<span id="copyCheck" class="hidden">✓</span>
 </button>
+
 <button id="newEmailBtn" class="btn-futuristic px-5 py-2 rounded-xl font-bold text-sm">
 New Email
 </button>
+
 <button id="refreshBtn" class="btn-futuristic px-5 py-2 rounded-xl font-bold text-sm">
 Refresh Inbox
 </button>
 </div>
 
-<!-- AD 1 -->
-<div class="ad-placeholder w-full">
-Ad Space (Banner)
-</div>
+<div class="ad-placeholder w-full">Ad Space (Banner)</div>
 
-<h2 id="inboxTitle" class="text-xl font-bold mb-3 border-b border-green-700 pb-2 w-full">
+<h2 class="text-xl font-bold mb-3 border-b border-green-700 pb-2 w-full">
 Inbox
 </h2>
 
 <div id="inboxList" class="space-y-3 w-full text-sm"></div>
 
-<!-- AD 2 -->
-<div class="ad-placeholder w-full">
-Ad Space (Native / Rectangle)
-</div>
+<div class="ad-placeholder w-full">Ad Space (Native)</div>
 
 </div>
 </div>
 
-<!-- UPDATED FOOTER -->
 <footer class="w-full mt-10">
 <div class="glass-3d w-full py-8 px-4 flex flex-col items-center text-sm">
-
-<div class="flex flex-wrap justify-center items-center gap-6 mb-4 w-full">
+<div class="flex gap-6 mb-4">
 <a href="#" class="footer-link">Terms of Service</a>
 <a href="#" class="footer-link">Privacy Policy</a>
 <a href="#" class="footer-link">Contact</a>
 </div>
-
 <p class="text-green-700 text-xs">
 © 2026 TempMailPro. All rights reserved.
 </p>
-
 </div>
 </footer>
 
@@ -160,7 +202,6 @@ return Array.from({length},()=>chars[Math.floor(Math.random()*chars.length)]).jo
 }
 
 async function createNewEmail(){
-try{
 const domainRes=await fetch(API+"/domains");
 const domainData=await domainRes.json();
 const domain=domainData["hydra:member"][0].domain;
@@ -168,25 +209,13 @@ const domain=domainData["hydra:member"][0].domain;
 currentEmail=randomString(10)+"@"+domain;
 currentPassword=randomString(12);
 
-await fetch(API+"/accounts",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({address:currentEmail,password:currentPassword})
-});
-
-const loginRes=await fetch(API+"/token",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({address:currentEmail,password:currentPassword})
-});
+await fetch(API+"/accounts",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({address:currentEmail,password:currentPassword})});
+const loginRes=await fetch(API+"/token",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({address:currentEmail,password:currentPassword})});
 const loginData=await loginRes.json();
 token=loginData.token;
 
 document.getElementById("emailDisplay").value=currentEmail;
 loadInbox();
-}catch(e){
-document.getElementById("emailDisplay").value="Error generating email";
-}
 }
 
 async function loadInbox(){
@@ -209,16 +238,36 @@ inboxList.appendChild(div);
 });
 }
 
-document.getElementById("copyBtn").onclick=()=>{
+function copyEmailAnimation(){
 navigator.clipboard.writeText(currentEmail);
-};
 
+const copyBtn=document.getElementById("copyBtn");
+const copyText=document.getElementById("copyText");
+const copyCheck=document.getElementById("copyCheck");
+
+const copyIcon=document.getElementById("copyIcon");
+const doneIcon=document.getElementById("doneIcon");
+
+copyBtn.classList.add("success-flash");
+copyText.classList.add("hidden");
+copyCheck.classList.remove("hidden");
+
+copyIcon.classList.add("hidden");
+doneIcon.classList.remove("hidden");
+
+setTimeout(()=>{
+copyBtn.classList.remove("success-flash");
+copyText.classList.remove("hidden");
+copyCheck.classList.add("hidden");
+copyIcon.classList.remove("hidden");
+doneIcon.classList.add("hidden");
+},1500);
+}
+
+document.getElementById("copyBtn").onclick=copyEmailAnimation;
+document.getElementById("copyIconBtn").onclick=copyEmailAnimation;
 document.getElementById("newEmailBtn").onclick=createNewEmail;
 document.getElementById("refreshBtn").onclick=loadInbox;
-
-document.getElementById("langBtn").onclick=()=>{
-document.getElementById("langMenu").classList.toggle("show");
-};
 
 createNewEmail();
 </script>
