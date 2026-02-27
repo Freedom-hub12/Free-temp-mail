@@ -23,26 +23,26 @@ box-shadow:0 0 20px rgba(34,197,94,0.15),
 0 15px 40px rgba(0,0,0,0.7);
 }
 
-/* BUTTONS */
+/* ALL BUTTON CLICK ANIMATION */
 .btn-futuristic{
 background: linear-gradient(145deg, rgba(34,197,94,0.25), rgba(34,197,94,0.05));
 border:1px solid rgba(34,197,94,0.4);
 backdrop-filter: blur(10px);
 transition:.15s;
 }
+
 .btn-futuristic:active{
-transform:scale(.93);
-box-shadow:0 0 25px rgba(34,197,94,0.7);
+transform:scale(.94);
 }
 
-/* COPY SUCCESS */
-.success-flash{
-animation:flash .5s ease;
+.btn-clicked{
+animation:glowPulse .4s ease;
 }
-@keyframes flash{
-0%{box-shadow:0 0 0 rgba(34,197,94,0);}
-50%{box-shadow:0 0 25px rgba(34,197,94,.8);}
-100%{box-shadow:0 0 0 rgba(34,197,94,0);}
+
+@keyframes glowPulse{
+0%{ box-shadow:0 0 0 rgba(34,197,94,0); }
+50%{ box-shadow:0 0 25px rgba(34,197,94,.7); }
+100%{ box-shadow:0 0 0 rgba(34,197,94,0); }
 }
 
 .input-futuristic{
@@ -61,8 +61,9 @@ transform:translateY(-50%);
 cursor:pointer;
 transition:.2s;
 }
+
 .copy-icon-btn:active{
-transform:translateY(-50%) scale(.8);
+transform:translateY(-50%) scale(.85);
 }
 
 .icon{
@@ -71,6 +72,7 @@ height:20px;
 stroke:#22c55e;
 transition:.3s;
 }
+
 .hidden{ display:none; }
 
 .lang-menu{
@@ -114,7 +116,7 @@ TempMail<span class="text-white">Pro</span>
 
 <div class="relative z-50">
 <button id="langBtn" class="btn-futuristic px-4 py-2 rounded-lg text-sm">
-<span id="currentLang">EN</span> ▼
+<span>EN</span> ▼
 </button>
 
 <div id="langMenu" class="lang-menu glass-3d rounded-xl overflow-hidden">
@@ -137,7 +139,6 @@ Your Temporary Email
 <input id="emailDisplay" type="text" readonly
 class="input-futuristic rounded-xl p-3 text-green-300 w-full"/>
 
-<!-- COPY ICON -->
 <div id="copyIconBtn" class="copy-icon-btn">
 <svg id="copyIcon" class="icon" fill="none" viewBox="0 0 24 24" stroke-width="2">
 <path stroke-linecap="round" stroke-linejoin="round"
@@ -238,36 +239,48 @@ inboxList.appendChild(div);
 });
 }
 
-function copyEmailAnimation(){
+/* COPY BUTTON */
+function copyFromButton(){
 navigator.clipboard.writeText(currentEmail);
+const btn=document.getElementById("copyBtn");
+const text=document.getElementById("copyText");
+const check=document.getElementById("copyCheck");
 
-const copyBtn=document.getElementById("copyBtn");
-const copyText=document.getElementById("copyText");
-const copyCheck=document.getElementById("copyCheck");
-
-const copyIcon=document.getElementById("copyIcon");
-const doneIcon=document.getElementById("doneIcon");
-
-copyBtn.classList.add("success-flash");
-copyText.classList.add("hidden");
-copyCheck.classList.remove("hidden");
-
-copyIcon.classList.add("hidden");
-doneIcon.classList.remove("hidden");
+btn.classList.add("btn-clicked");
+text.classList.add("hidden");
+check.classList.remove("hidden");
 
 setTimeout(()=>{
-copyBtn.classList.remove("success-flash");
-copyText.classList.remove("hidden");
-copyCheck.classList.add("hidden");
-copyIcon.classList.remove("hidden");
-doneIcon.classList.add("hidden");
-},1500);
+btn.classList.remove("btn-clicked");
+text.classList.remove("hidden");
+check.classList.add("hidden");
+},1200);
 }
 
-document.getElementById("copyBtn").onclick=copyEmailAnimation;
-document.getElementById("copyIconBtn").onclick=copyEmailAnimation;
-document.getElementById("newEmailBtn").onclick=createNewEmail;
-document.getElementById("refreshBtn").onclick=loadInbox;
+/* COPY ICON */
+function copyFromIcon(){
+navigator.clipboard.writeText(currentEmail);
+const icon=document.getElementById("copyIcon");
+const done=document.getElementById("doneIcon");
+
+icon.classList.add("hidden");
+done.classList.remove("hidden");
+
+setTimeout(()=>{
+icon.classList.remove("hidden");
+done.classList.add("hidden");
+},1200);
+}
+
+document.getElementById("copyBtn").onclick=copyFromButton;
+document.getElementById("copyIconBtn").onclick=copyFromIcon;
+document.getElementById("newEmailBtn").onclick=e=>{e.target.classList.add("btn-clicked");setTimeout(()=>e.target.classList.remove("btn-clicked"),400);createNewEmail();}
+document.getElementById("refreshBtn").onclick=e=>{e.target.classList.add("btn-clicked");setTimeout(()=>e.target.classList.remove("btn-clicked"),400);loadInbox();}
+document.getElementById("langBtn").onclick=e=>{
+e.target.classList.add("btn-clicked");
+setTimeout(()=>e.target.classList.remove("btn-clicked"),400);
+document.getElementById("langMenu").classList.toggle("show");
+};
 
 createNewEmail();
 </script>
