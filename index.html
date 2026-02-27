@@ -116,14 +116,14 @@ TempMail<span class="text-white">Pro</span>
 
 <div class="relative z-50">
 <button id="langBtn" class="btn-futuristic px-4 py-2 rounded-lg text-sm">
-<span>EN</span> ▼
+<span id="currentLang">EN</span> ▼
 </button>
 
 <div id="langMenu" class="lang-menu glass-3d rounded-xl overflow-hidden">
-<button class="btn-futuristic w-full p-2">English</button>
-<button class="btn-futuristic w-full p-2">Français</button>
-<button class="btn-futuristic w-full p-2">Español</button>
-<button class="btn-futuristic w-full p-2">العربية</button>
+<button class="btn-futuristic w-full p-2" data-lang="en">English</button>
+<button class="btn-futuristic w-full p-2" data-lang="fr">Français</button>
+<button class="btn-futuristic w-full p-2" data-lang="es">Español</button>
+<button class="btn-futuristic w-full p-2" data-lang="ar">العربية</button>
 </div>
 </div>
 </div>
@@ -131,7 +131,7 @@ TempMail<span class="text-white">Pro</span>
 <div class="max-w-5xl w-full px-4 pb-12">
 <div class="glass-3d rounded-3xl p-8 flex flex-col items-center">
 
-<label class="mb-3 text-lg font-semibold">
+<label id="labelEmail" class="mb-3 text-lg font-semibold">
 Your Temporary Email
 </label>
 
@@ -169,7 +169,7 @@ Refresh Inbox
 
 <div class="ad-placeholder w-full">Ad Space (Banner)</div>
 
-<h2 class="text-xl font-bold mb-3 border-b border-green-700 pb-2 w-full">
+<h2 id="inboxTitle" class="text-xl font-bold mb-3 border-b border-green-700 pb-2 w-full">
 Inbox
 </h2>
 
@@ -197,10 +197,26 @@ Inbox
 const API="https://api.mail.tm";
 let token="",currentEmail="",currentPassword="";
 
-function randomString(length){
-const chars="abcdefghijklmnopqrstuvwxyz1234567890";
-return Array.from({length},()=>chars[Math.floor(Math.random()*chars.length)]).join("");
+const translations={
+en:{labelEmail:"Your Temporary Email",copy:"Copy",newEmail:"New Email",refresh:"Refresh Inbox",inbox:"Inbox"},
+fr:{labelEmail:"Votre Email Temporaire",copy:"Copier",newEmail:"Nouvel Email",refresh:"Actualiser la Boîte",inbox:"Boîte de Réception"},
+es:{labelEmail:"Tu Correo Temporal",copy:"Copiar",newEmail:"Nuevo Email",refresh:"Actualizar Bandeja",inbox:"Bandeja de Entrada"},
+ar:{labelEmail:"بريدك المؤقت",copy:"نسخ",newEmail:"بريد جديد",refresh:"تحديث الوارد",inbox:"الوارد"}
+};
+
+function setLanguage(lang){
+document.getElementById("labelEmail").innerText=translations[lang].labelEmail;
+document.getElementById("copyText").innerText=translations[lang].copy;
+document.getElementById("newEmailBtn").innerText=translations[lang].newEmail;
+document.getElementById("refreshBtn").innerText=translations[lang].refresh;
+document.getElementById("inboxTitle").innerText=translations[lang].inbox;
+document.getElementById("currentLang").innerText=lang.toUpperCase();
+document.getElementById("langMenu").classList.remove("show");
+document.body.dir = (lang==="ar") ? "rtl" : "ltr";
 }
+
+/* EMAIL FUNCTIONS */
+function randomString(length){const chars="abcdefghijklmnopqrstuvwxyz1234567890";return Array.from({length},()=>chars[Math.floor(Math.random()*chars.length)]).join("");}
 
 async function createNewEmail(){
 const domainRes=await fetch(API+"/domains");
@@ -226,15 +242,11 @@ const res=await fetch(API+"/messages",{headers:{Authorization:"Bearer "+token}})
 const data=await res.json();
 const messages=data["hydra:member"];
 inboxList.innerHTML="";
-if(!messages||messages.length===0){
-inboxList.innerHTML="<p>No messages yet.</p>";
-return;
-}
+if(!messages||messages.length===0){inboxList.innerHTML="<p>No messages yet.</p>"; return;}
 messages.forEach(msg=>{
 const div=document.createElement("div");
 div.className="p-3 rounded-xl bg-green-900/20 border border-green-500/30";
-div.innerHTML=`<p class="font-bold">${msg.subject||"(No Subject)"}</p>
-<p class="text-green-500">${msg.from.address}</p>`;
+div.innerHTML=`<p class="font-bold">${msg.subject||"(No Subject)"}</p><p class="text-green-500">${msg.from.address}</p>`;
 inboxList.appendChild(div);
 });
 }
@@ -245,16 +257,10 @@ navigator.clipboard.writeText(currentEmail);
 const btn=document.getElementById("copyBtn");
 const text=document.getElementById("copyText");
 const check=document.getElementById("copyCheck");
-
 btn.classList.add("btn-clicked");
 text.classList.add("hidden");
 check.classList.remove("hidden");
-
-setTimeout(()=>{
-btn.classList.remove("btn-clicked");
-text.classList.remove("hidden");
-check.classList.add("hidden");
-},1200);
+setTimeout(()=>{btn.classList.remove("btn-clicked"); text.classList.remove("hidden"); check.classList.add("hidden");},1200);
 }
 
 /* COPY ICON */
@@ -262,25 +268,35 @@ function copyFromIcon(){
 navigator.clipboard.writeText(currentEmail);
 const icon=document.getElementById("copyIcon");
 const done=document.getElementById("doneIcon");
-
 icon.classList.add("hidden");
 done.classList.remove("hidden");
-
-setTimeout(()=>{
-icon.classList.remove("hidden");
-done.classList.add("hidden");
-},1200);
+setTimeout(()=>{icon.classList.remove("hidden"); done.classList.add("hidden");},1200);
 }
 
+/* ADD CLICK ANIMATIONS TO OTHER BUTTONS */
+function addButtonEffect(btn, callback){btn.onclick=e=>{btn.classList.add("btn-clicked"); setTimeout(()=>btn.classList.remove("btn-clicked"),400); callback(); };}
+
+/* EVENT LISTENERS */
 document.getElementById("copyBtn").onclick=copyFromButton;
 document.getElementById("copyIconBtn").onclick=copyFromIcon;
-document.getElementById("newEmailBtn").onclick=e=>{e.target.classList.add("btn-clicked");setTimeout(()=>e.target.classList.remove("btn-clicked"),400);createNewEmail();}
-document.getElementById("refreshBtn").onclick=e=>{e.target.classList.add("btn-clicked");setTimeout(()=>e.target.classList.remove("btn-clicked"),400);loadInbox();}
+addButtonEffect(document.getElementById("newEmailBtn"), createNewEmail);
+addButtonEffect(document.getElementById("refreshBtn"), loadInbox);
+
 document.getElementById("langBtn").onclick=e=>{
-e.target.classList.add("btn-clicked");
-setTimeout(()=>e.target.classList.remove("btn-clicked"),400);
+e.currentTarget.classList.add("btn-clicked");
+setTimeout(()=>e.currentTarget.classList.remove("btn-clicked"),400);
 document.getElementById("langMenu").classList.toggle("show");
 };
+
+/* MAKE LANGUAGES CLICKABLE */
+document.querySelectorAll("#langMenu button").forEach(btn=>{
+btn.onclick=e=>{
+const lang=btn.dataset.lang;
+setLanguage(lang);
+btn.classList.add("btn-clicked");
+setTimeout(()=>btn.classList.remove("btn-clicked"),400);
+};
+});
 
 createNewEmail();
 </script>
