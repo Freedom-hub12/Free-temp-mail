@@ -43,9 +43,26 @@ body{
     text-align:center;
 }
 
+/* Footer */
 .footer-link{ color:#22c55e; transition:.3s; }
 .footer-link:hover{ color:white; text-shadow:0 0 10px #22c55e; }
 
+/* Language Dropdown */
+.lang-menu{
+    position:absolute;
+    right:0;
+    top:60px;
+    min-width:140px;
+    display:none;
+}
+.lang-menu button{
+    width:100%;
+    padding:8px;
+    text-align:center;
+}
+.lang-menu.show{ display:block; }
+
+/* Icon animation */
 .fade-swap{ transition:opacity .25s ease, transform .25s ease; }
 .hidden-icon{ opacity:0; transform:scale(.5); position:absolute; }
 .visible-icon{ opacity:1; transform:scale(1); position:relative; }
@@ -60,20 +77,31 @@ body{
 
 <body class="text-green-400 min-h-screen font-sans flex flex-col items-center">
 
-<header class="py-10 w-full">
-<h1 class="text-4xl font-extrabold tracking-widest text-green-400">
+<!-- TOP BAR -->
+<div class="w-full flex justify-between items-center px-6 py-4">
+<h1 class="text-2xl font-extrabold tracking-widest text-green-400">
 TempMail<span class="text-white">Pro</span>
 </h1>
-<p class="mt-3 text-green-500 text-base">
-Futuristic • Anonymous • Disposable Email
-</p>
-</header>
+
+<div class="relative">
+<button id="langBtn" class="btn-futuristic px-4 py-2 rounded-lg text-sm flex items-center gap-2">
+<span id="currentLang">EN</span> ▼
+</button>
+
+<div id="langMenu" class="lang-menu glass-3d rounded-xl overflow-hidden">
+<button onclick="setLanguage('en')" class="btn-futuristic">English</button>
+<button onclick="setLanguage('fr')" class="btn-futuristic">Français</button>
+<button onclick="setLanguage('es')" class="btn-futuristic">Español</button>
+<button onclick="setLanguage('ar')" class="btn-futuristic">العربية</button>
+</div>
+</div>
+</div>
 
 <div class="max-w-5xl w-full px-4 pb-12 flex flex-col lg:flex-row gap-8 items-center">
 
 <div class="flex-1 glass-3d rounded-3xl p-8 flex flex-col items-center w-full">
 
-<label class="mb-3 text-lg font-semibold">
+<label id="labelEmail" class="mb-3 text-lg font-semibold">
 Your Temporary Email
 </label>
 
@@ -116,47 +144,29 @@ New Email
 
 </div>
 
-<div class="btn-futuristic rounded-2xl p-5 text-green-500 font-semibold mb-6 w-full text-sm">
-Mid Content Ad Placeholder
-</div>
-
 <button id="refreshBtn" class="btn-futuristic px-4 py-2 rounded-xl font-semibold mb-5 text-sm">
 Refresh Inbox
 </button>
 
-<h2 class="text-xl font-bold mb-3 border-b border-green-700 pb-2 w-full">
+<h2 id="inboxTitle" class="text-xl font-bold mb-3 border-b border-green-700 pb-2 w-full">
 Inbox
 </h2>
 
 <div id="inboxList" class="space-y-3 w-full text-sm"></div>
 
-<div class="btn-futuristic rounded-2xl p-5 text-green-500 font-semibold mt-8 w-full text-sm">
-Bottom Content Ad Placeholder
+</div>
 </div>
 
-</div>
-
-<aside class="w-full lg:w-72 glass-3d rounded-3xl p-6 flex items-center justify-center text-green-500 font-semibold text-sm">
-Sidebar Ad Placeholder (300x250)
-</aside>
-
-</div>
-
-<!-- ✅ FULL WIDTH CENTERED FOOTER -->
 <footer class="w-full mt-10">
 <div class="glass-3d w-full py-8 px-4 flex flex-col items-center justify-center text-sm text-green-500">
-
 <div class="flex flex-wrap justify-center items-center gap-6 mb-4 w-full">
-<a href="#" class="footer-link">Terms of Service</a>
-<a href="#" class="footer-link">Privacy Policy</a>
-<a href="#" class="footer-link">DMCA</a>
-<a href="#" class="footer-link">Contact</a>
+<a id="terms" href="#" class="footer-link">Terms of Service</a>
+<a id="privacy" href="#" class="footer-link">Privacy Policy</a>
+<a id="contact" href="#" class="footer-link">Contact</a>
 </div>
-
 <p class="text-green-700 text-xs text-center w-full">
-© 2026 TempMailPro. All rights reserved.
+© 2026 TempMailPro
 </p>
-
 </div>
 </footer>
 
@@ -164,13 +174,79 @@ Sidebar Ad Placeholder (300x250)
 const API="https://api.mail.tm";
 let token="",currentEmail="",currentPassword="";
 
+/* ================= LANGUAGE SYSTEM ================= */
+
+const translations={
+en:{
+labelEmail:"Your Temporary Email",
+copy:"Copy",
+newEmail:"New Email",
+refresh:"Refresh Inbox",
+inbox:"Inbox",
+terms:"Terms of Service",
+privacy:"Privacy Policy",
+contact:"Contact"
+},
+fr:{
+labelEmail:"Votre Email Temporaire",
+copy:"Copier",
+newEmail:"Nouvel Email",
+refresh:"Actualiser la Boîte",
+inbox:"Boîte de Réception",
+terms:"Conditions d'utilisation",
+privacy:"Politique de confidentialité",
+contact:"Contact"
+},
+es:{
+labelEmail:"Tu Correo Temporal",
+copy:"Copiar",
+newEmail:"Nuevo Email",
+refresh:"Actualizar Bandeja",
+inbox:"Bandeja de Entrada",
+terms:"Términos del Servicio",
+privacy:"Política de Privacidad",
+contact:"Contacto"
+},
+ar:{
+labelEmail:"بريدك المؤقت",
+copy:"نسخ",
+newEmail:"بريد جديد",
+refresh:"تحديث الوارد",
+inbox:"الوارد",
+terms:"شروط الاستخدام",
+privacy:"سياسة الخصوصية",
+contact:"اتصل بنا"
+}
+};
+
+function setLanguage(lang){
+document.getElementById("labelEmail").innerText=translations[lang].labelEmail;
+document.getElementById("copyText").innerText=translations[lang].copy;
+document.getElementById("newEmailBtn").innerText=translations[lang].newEmail;
+document.getElementById("refreshBtn").innerText=translations[lang].refresh;
+document.getElementById("inboxTitle").innerText=translations[lang].inbox;
+document.getElementById("terms").innerText=translations[lang].terms;
+document.getElementById("privacy").innerText=translations[lang].privacy;
+document.getElementById("contact").innerText=translations[lang].contact;
+document.getElementById("currentLang").innerText=lang.toUpperCase();
+document.getElementById("langMenu").classList.remove("show");
+
+if(lang==="ar"){ document.body.dir="rtl"; }
+else{ document.body.dir="ltr"; }
+}
+
+document.getElementById("langBtn").onclick=function(){
+document.getElementById("langMenu").classList.toggle("show");
+};
+
+/* ================= EMAIL SYSTEM ================= */
+
 function randomString(length){
 const chars="abcdefghijklmnopqrstuvwxyz1234567890";
 return Array.from({length},()=>chars[Math.floor(Math.random()*chars.length)]).join("");
 }
 
 async function createNewEmail(){
-document.getElementById("inboxList").innerHTML="Generating...";
 const domainRes=await fetch(API+"/domains");
 const domainData=await domainRes.json();
 const domain=domainData["hydra:member"][0].domain;
@@ -192,7 +268,7 @@ const data=await res.json();
 const messages=data["hydra:member"];
 inboxList.innerHTML="";
 if(!messages||messages.length===0){
-inboxList.innerHTML="<p class='text-green-500'>No messages yet.</p>";
+inboxList.innerHTML="<p>No messages yet.</p>";
 return;
 }
 messages.forEach(msg=>{
