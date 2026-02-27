@@ -15,7 +15,6 @@ body{
     text-align:center;
 }
 
-/* Glass */
 .glass-3d{
     background: rgba(15,23,42,0.55);
     backdrop-filter: blur(25px);
@@ -24,7 +23,6 @@ body{
                0 15px 40px rgba(0,0,0,0.7);
 }
 
-/* Buttons */
 .btn-futuristic{
     background: linear-gradient(145deg, rgba(34,197,94,0.25), rgba(34,197,94,0.05));
     border:1px solid rgba(34,197,94,0.4);
@@ -43,17 +41,17 @@ body{
     text-align:center;
 }
 
-/* Footer */
 .footer-link{ color:#22c55e; transition:.3s; }
 .footer-link:hover{ color:white; text-shadow:0 0 10px #22c55e; }
 
-/* Language Dropdown */
+/* FIXED DROPDOWN */
 .lang-menu{
     position:absolute;
     right:0;
     top:60px;
     min-width:140px;
     display:none;
+    z-index:9999; /* ensures it appears above everything */
 }
 .lang-menu button{
     width:100%;
@@ -62,15 +60,18 @@ body{
 }
 .lang-menu.show{ display:block; }
 
-/* Icon animation */
-.fade-swap{ transition:opacity .25s ease, transform .25s ease; }
-.hidden-icon{ opacity:0; transform:scale(.5); position:absolute; }
-.visible-icon{ opacity:1; transform:scale(1); position:relative; }
-.icon-animate{ animation:bounce .25s ease; }
-@keyframes bounce{
-0%{transform:scale(1);}
-50%{transform:scale(1.3);}
-100%{transform:scale(1);}
+/* Ad placeholders */
+.ad-placeholder{
+    margin:25px 0;
+    padding:25px;
+    border-radius:20px;
+    font-size:14px;
+    letter-spacing:1px;
+    color:#22c55e;
+    background: rgba(0,0,0,0.35);
+    border:1px dashed rgba(34,197,94,0.4);
+    backdrop-filter: blur(20px);
+    box-shadow:0 0 20px rgba(34,197,94,0.15);
 }
 </style>
 </head>
@@ -83,7 +84,7 @@ body{
 TempMail<span class="text-white">Pro</span>
 </h1>
 
-<div class="relative">
+<div class="relative z-50"><!-- z-50 added -->
 <button id="langBtn" class="btn-futuristic px-4 py-2 rounded-lg text-sm flex items-center gap-2">
 <span id="currentLang">EN</span> ▼
 </button>
@@ -98,7 +99,6 @@ TempMail<span class="text-white">Pro</span>
 </div>
 
 <div class="max-w-5xl w-full px-4 pb-12 flex flex-col lg:flex-row gap-8 items-center">
-
 <div class="flex-1 glass-3d rounded-3xl p-8 flex flex-col items-center w-full">
 
 <label id="labelEmail" class="mb-3 text-lg font-semibold">
@@ -106,53 +106,41 @@ Your Temporary Email
 </label>
 
 <div class="flex flex-col md:flex-row gap-3 mb-6 items-center w-full">
-
 <div class="flex flex-1 relative w-full">
 <input id="emailDisplay" type="text" readonly
-class="flex-1 input-futuristic rounded-l-xl p-3 text-green-300 text-base w-full"/>
-
-<button id="copyIconBtn"
-class="px-4 rounded-r-xl flex items-center justify-center bg-green-900/40 border-l border-green-500 relative">
-
-<svg id="copyIcon" xmlns="http://www.w3.org/2000/svg"
-class="w-5 h-5 text-green-400 fade-swap visible-icon"
-fill="none" viewBox="0 0 24 24" stroke="currentColor">
-<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-d="M8 16h8M8 12h8m-6 8h6a2 2 0 002-2V6a2 2 0 00-2-2h-6l-4 4v10a2 2 0 002 2z"/>
-</svg>
-
-<svg id="doneIcon" xmlns="http://www.w3.org/2000/svg"
-class="w-5 h-5 text-green-400 fade-swap hidden-icon"
-fill="none" viewBox="0 0 24 24" stroke="currentColor">
-<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-d="M5 13l4 4L19 7"/>
-</svg>
-
-</button>
+class="flex-1 input-futuristic rounded-xl p-3 text-green-300 text-base w-full"/>
 </div>
 
-<button id="copyBtn" class="btn-futuristic px-5 py-2 rounded-xl font-bold text-sm relative overflow-hidden">
+<button id="copyBtn" class="btn-futuristic px-5 py-2 rounded-xl font-bold text-sm">
 <span id="copyText">Copy</span>
-<span id="copyCheck" class="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300">
-✓ Copied
-</span>
 </button>
 
 <button id="newEmailBtn" class="btn-futuristic px-5 py-2 rounded-xl font-bold text-sm">
 New Email
 </button>
-
 </div>
 
 <button id="refreshBtn" class="btn-futuristic px-4 py-2 rounded-xl font-semibold mb-5 text-sm">
 Refresh Inbox
 </button>
 
+<!-- AD PLACEHOLDER 1 -->
+<div class="ad-placeholder w-full">
+Ad Space (728x90 or Responsive Banner)
+</div>
+
 <h2 id="inboxTitle" class="text-xl font-bold mb-3 border-b border-green-700 pb-2 w-full">
 Inbox
 </h2>
 
-<div id="inboxList" class="space-y-3 w-full text-sm"></div>
+<div id="inboxList" class="space-y-3 w-full text-sm">
+<p>No messages yet.</p>
+</div>
+
+<!-- AD PLACEHOLDER 2 -->
+<div class="ad-placeholder w-full">
+Ad Space (300x250 or Native Ad)
+</div>
 
 </div>
 </div>
@@ -171,52 +159,11 @@ Inbox
 </footer>
 
 <script>
-const API="https://api.mail.tm";
-let token="",currentEmail="",currentPassword="";
-
-/* ================= LANGUAGE SYSTEM ================= */
-
 const translations={
-en:{
-labelEmail:"Your Temporary Email",
-copy:"Copy",
-newEmail:"New Email",
-refresh:"Refresh Inbox",
-inbox:"Inbox",
-terms:"Terms of Service",
-privacy:"Privacy Policy",
-contact:"Contact"
-},
-fr:{
-labelEmail:"Votre Email Temporaire",
-copy:"Copier",
-newEmail:"Nouvel Email",
-refresh:"Actualiser la Boîte",
-inbox:"Boîte de Réception",
-terms:"Conditions d'utilisation",
-privacy:"Politique de confidentialité",
-contact:"Contact"
-},
-es:{
-labelEmail:"Tu Correo Temporal",
-copy:"Copiar",
-newEmail:"Nuevo Email",
-refresh:"Actualizar Bandeja",
-inbox:"Bandeja de Entrada",
-terms:"Términos del Servicio",
-privacy:"Política de Privacidad",
-contact:"Contacto"
-},
-ar:{
-labelEmail:"بريدك المؤقت",
-copy:"نسخ",
-newEmail:"بريد جديد",
-refresh:"تحديث الوارد",
-inbox:"الوارد",
-terms:"شروط الاستخدام",
-privacy:"سياسة الخصوصية",
-contact:"اتصل بنا"
-}
+en:{labelEmail:"Your Temporary Email",copy:"Copy",newEmail:"New Email",refresh:"Refresh Inbox",inbox:"Inbox"},
+fr:{labelEmail:"Votre Email Temporaire",copy:"Copier",newEmail:"Nouvel Email",refresh:"Actualiser la Boîte",inbox:"Boîte de Réception"},
+es:{labelEmail:"Tu Correo Temporal",copy:"Copiar",newEmail:"Nuevo Email",refresh:"Actualizar Bandeja",inbox:"Bandeja de Entrada"},
+ar:{labelEmail:"بريدك المؤقت",copy:"نسخ",newEmail:"بريد جديد",refresh:"تحديث الوارد",inbox:"الوارد"}
 };
 
 function setLanguage(lang){
@@ -225,92 +172,14 @@ document.getElementById("copyText").innerText=translations[lang].copy;
 document.getElementById("newEmailBtn").innerText=translations[lang].newEmail;
 document.getElementById("refreshBtn").innerText=translations[lang].refresh;
 document.getElementById("inboxTitle").innerText=translations[lang].inbox;
-document.getElementById("terms").innerText=translations[lang].terms;
-document.getElementById("privacy").innerText=translations[lang].privacy;
-document.getElementById("contact").innerText=translations[lang].contact;
 document.getElementById("currentLang").innerText=lang.toUpperCase();
 document.getElementById("langMenu").classList.remove("show");
-
-if(lang==="ar"){ document.body.dir="rtl"; }
-else{ document.body.dir="ltr"; }
+document.body.dir = (lang==="ar") ? "rtl" : "ltr";
 }
 
 document.getElementById("langBtn").onclick=function(){
 document.getElementById("langMenu").classList.toggle("show");
 };
-
-/* ================= EMAIL SYSTEM ================= */
-
-function randomString(length){
-const chars="abcdefghijklmnopqrstuvwxyz1234567890";
-return Array.from({length},()=>chars[Math.floor(Math.random()*chars.length)]).join("");
-}
-
-async function createNewEmail(){
-const domainRes=await fetch(API+"/domains");
-const domainData=await domainRes.json();
-const domain=domainData["hydra:member"][0].domain;
-currentEmail=randomString(10)+"@"+domain;
-currentPassword=randomString(12);
-await fetch(API+"/accounts",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({address:currentEmail,password:currentPassword})});
-const loginRes=await fetch(API+"/token",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({address:currentEmail,password:currentPassword})});
-const loginData=await loginRes.json();
-token=loginData.token;
-document.getElementById("emailDisplay").value=currentEmail;
-loadInbox();
-}
-
-async function loadInbox(){
-const inboxList=document.getElementById("inboxList");
-inboxList.innerHTML="Loading...";
-const res=await fetch(API+"/messages",{headers:{Authorization:"Bearer "+token}});
-const data=await res.json();
-const messages=data["hydra:member"];
-inboxList.innerHTML="";
-if(!messages||messages.length===0){
-inboxList.innerHTML="<p>No messages yet.</p>";
-return;
-}
-messages.forEach(msg=>{
-const div=document.createElement("div");
-div.className="p-3 rounded-xl bg-green-900/20 border border-green-500/30";
-div.innerHTML=`<p class="font-bold">${msg.subject||"(No Subject)"}</p>
-<p class="text-green-500">${msg.from.address}</p>`;
-inboxList.appendChild(div);
-});
-}
-
-async function copyEmail(){
-if(!currentEmail)return;
-await navigator.clipboard.writeText(currentEmail);
-}
-
-document.getElementById("copyBtn").onclick=async function(){
-await copyEmail();
-const copyText=document.getElementById("copyText");
-const copyCheck=document.getElementById("copyCheck");
-copyText.classList.add("opacity-0");
-copyCheck.classList.remove("opacity-0");
-setTimeout(()=>{ copyCheck.classList.add("opacity-0"); copyText.classList.remove("opacity-0"); },1200);
-};
-
-document.getElementById("copyIconBtn").onclick=async function(){
-const copyIcon=document.getElementById("copyIcon");
-const doneIcon=document.getElementById("doneIcon");
-await copyEmail();
-copyIcon.classList.replace("visible-icon","hidden-icon");
-doneIcon.classList.replace("hidden-icon","visible-icon");
-doneIcon.classList.add("icon-animate");
-setTimeout(()=>{
-doneIcon.classList.replace("visible-icon","hidden-icon");
-copyIcon.classList.replace("hidden-icon","visible-icon");
-},1200);
-};
-
-document.getElementById("refreshBtn").onclick=function(){ loadInbox(); };
-document.getElementById("newEmailBtn").onclick=function(){ createNewEmail(); };
-
-createNewEmail();
 </script>
 
 </body>
