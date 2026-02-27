@@ -45,6 +45,16 @@ animation:glowPulse .4s ease;
 100%{ box-shadow:0 0 0 rgba(34,197,94,0); }
 }
 
+.lang-btn-clicked{
+animation:langClick .3s ease forwards;
+}
+
+@keyframes langClick{
+0%{ transform:translateX(0px); opacity:1; }
+50%{ transform:translateX(5px) scale(1.05); opacity:.9; }
+100%{ transform:translateX(0px); opacity:1; }
+}
+
 .input-futuristic{
 background:rgba(0,0,0,.4);
 border:1px solid rgba(34,197,94,.5);
@@ -183,11 +193,11 @@ Inbox
 <footer class="w-full mt-10">
 <div class="glass-3d w-full py-8 px-4 flex flex-col items-center text-sm">
 <div class="flex gap-6 mb-4">
-<a href="#" class="footer-link">Terms of Service</a>
-<a href="#" class="footer-link">Privacy Policy</a>
-<a href="#" class="footer-link">Contact</a>
+<a href="#" class="footer-link" id="termsLink">Terms of Service</a>
+<a href="#" class="footer-link" id="privacyLink">Privacy Policy</a>
+<a href="#" class="footer-link" id="contactLink">Contact</a>
 </div>
-<p class="text-green-700 text-xs">
+<p class="text-green-700 text-xs" id="copyright">
 © 2026 TempMailPro. All rights reserved.
 </p>
 </div>
@@ -198,21 +208,26 @@ const API="https://api.mail.tm";
 let token="",currentEmail="",currentPassword="";
 
 const translations={
-en:{labelEmail:"Your Temporary Email",copy:"Copy",newEmail:"New Email",refresh:"Refresh Inbox",inbox:"Inbox"},
-fr:{labelEmail:"Votre Email Temporaire",copy:"Copier",newEmail:"Nouvel Email",refresh:"Actualiser la Boîte",inbox:"Boîte de Réception"},
-es:{labelEmail:"Tu Correo Temporal",copy:"Copiar",newEmail:"Nuevo Email",refresh:"Actualizar Bandeja",inbox:"Bandeja de Entrada"},
-ar:{labelEmail:"بريدك المؤقت",copy:"نسخ",newEmail:"بريد جديد",refresh:"تحديث الوارد",inbox:"الوارد"}
+en:{labelEmail:"Your Temporary Email",copy:"Copy",newEmail:"New Email",refresh:"Refresh Inbox",inbox:"Inbox",terms:"Terms of Service",privacy:"Privacy Policy",contact:"Contact",copyright:"© 2026 TempMailPro. All rights reserved."},
+fr:{labelEmail:"Votre Email Temporaire",copy:"Copier",newEmail:"Nouvel Email",refresh:"Actualiser la Boîte",inbox:"Boîte de Réception",terms:"Conditions d'Utilisation",privacy:"Politique de Confidentialité",contact:"Contact",copyright:"© 2026 TempMailPro. Tous droits réservés."},
+es:{labelEmail:"Tu Correo Temporal",copy:"Copiar",newEmail:"Nuevo Email",refresh:"Actualizar Bandeja",inbox:"Bandeja de Entrada",terms:"Términos del Servicio",privacy:"Política de Privacidad",contact:"Contacto",copyright:"© 2026 TempMailPro. Todos los derechos reservados."},
+ar:{labelEmail:"بريدك المؤقت",copy:"نسخ",newEmail:"بريد جديد",refresh:"تحديث الوارد",inbox:"الوارد",terms:"شروط الخدمة",privacy:"سياسة الخصوصية",contact:"اتصل بنا",copyright:"© 2026 TempMailPro. جميع الحقوق محفوظة."}
 };
 
 function setLanguage(lang){
-document.getElementById("labelEmail").innerText=translations[lang].labelEmail;
-document.getElementById("copyText").innerText=translations[lang].copy;
-document.getElementById("newEmailBtn").innerText=translations[lang].newEmail;
-document.getElementById("refreshBtn").innerText=translations[lang].refresh;
-document.getElementById("inboxTitle").innerText=translations[lang].inbox;
+const t=translations[lang];
+document.getElementById("labelEmail").innerText=t.labelEmail;
+document.getElementById("copyText").innerText=t.copy;
+document.getElementById("newEmailBtn").innerText=t.newEmail;
+document.getElementById("refreshBtn").innerText=t.refresh;
+document.getElementById("inboxTitle").innerText=t.inbox;
+document.getElementById("termsLink").innerText=t.terms;
+document.getElementById("privacyLink").innerText=t.privacy;
+document.getElementById("contactLink").innerText=t.contact;
+document.getElementById("copyright").innerText=t.copyright;
 document.getElementById("currentLang").innerText=lang.toUpperCase();
 document.getElementById("langMenu").classList.remove("show");
-document.body.dir = (lang==="ar") ? "rtl" : "ltr";
+document.body.dir=(lang==="ar")?"rtl":"ltr";
 }
 
 /* EMAIL FUNCTIONS */
@@ -288,13 +303,12 @@ setTimeout(()=>e.currentTarget.classList.remove("btn-clicked"),400);
 document.getElementById("langMenu").classList.toggle("show");
 };
 
-/* MAKE LANGUAGES CLICKABLE */
+/* LANGUAGE BUTTONS ANIMATION + TRANSLATION */
 document.querySelectorAll("#langMenu button").forEach(btn=>{
 btn.onclick=e=>{
-const lang=btn.dataset.lang;
-setLanguage(lang);
-btn.classList.add("btn-clicked");
-setTimeout(()=>btn.classList.remove("btn-clicked"),400);
+btn.classList.add("lang-btn-clicked");
+setTimeout(()=>btn.classList.remove("lang-btn-clicked"),300);
+setLanguage(btn.dataset.lang);
 };
 });
 
